@@ -27,8 +27,8 @@ export class CloudwatchAlarmSystemStack extends cdk.Stack {
     // Lambda function
     const alarmProcessor = new lambda.Function(this, 'AlarmProcessor', {
       runtime: lambda.Runtime.PYTHON_3_10,
-      code: lambda.Code.fromAsset('lambdafile'), // path to lambda function code
-      handler: 'index.handler',
+      code: lambda.Code.fromAsset('lambda-code'),
+      handler: 'alarmProcessor.lambda_handler',
       environment: {
         TABLE_NAME: alarmTable.tableName,
       },
