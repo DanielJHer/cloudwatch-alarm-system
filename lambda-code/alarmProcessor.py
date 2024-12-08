@@ -6,6 +6,7 @@ from dateTime import dateTime
 dynamodb = boto3.resource('dynamodb')
 table_name = os.environ['TABLE_NAME']
 table = dynamodb.Table(table_name)
+sns = boto3.client('sns')
 
 def lambda_handler(event, context):
     try:
@@ -35,9 +36,12 @@ def lambda_handler(event, context):
             report = "\n".join(
                 [f"Alarm: {item['AlarmName']}, State: {item['State']}, Time: {item['Timestamp']}" for item in items]
             )
-            print("daily Alarm Report:")
-            print(report)
-
+            # Publish the report to SNS
+            sns.Publish(
+                TopicArn= os.environ['SNS_TOPIC_ARN']
+                Message=f"Daily Cloudwatch Alarm REport:\n\n{report}",
+                Subject= "CloudWatch Alarm Summary"
+            )
     except Exception as e:
         print("Error processing event: {e}")
         raise
