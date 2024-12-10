@@ -40,6 +40,9 @@ export class CloudwatchAlarmSystemStack extends cdk.Stack {
       machineImage: ec2.MachineImage.latestAmazonLinux(),
       securityGroup,
       keyName: 'bastion',
+      vpcSubnets: {
+        subnetType: ec2.SubnetType.PUBLIC, // Launch in a public subnet
+      },
     });
 
     // Initialize DynamoDB
