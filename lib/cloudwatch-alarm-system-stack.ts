@@ -50,6 +50,7 @@ export class CloudwatchAlarmSystemStack extends cdk.Stack {
       partitionKey: { name: 'AlarmName', type: dynamodb.AttributeType.STRING },
       sortKey: { name: 'Timestamp', type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
     // SNS Topic
@@ -69,6 +70,9 @@ export class CloudwatchAlarmSystemStack extends cdk.Stack {
 
     // Grant lambda function write permission to dynamodb
     alarmTable.grantWriteData(alarmProcessor);
+
+    // Grant Lambda permission to publish to the SNS topic
+    alarmTopic.grantPublish(alarmProcessor);
 
     // Subscribe Lambda to the SNS Topic
     alarmTopic.addSubscription(
@@ -92,13 +96,5 @@ export class CloudwatchAlarmSystemStack extends cdk.Stack {
     highCpuAlarm.addAlarmAction({
       bind: () => ({ alarmActionArn: alarmTopic.topicArn }),
     });
-
-    // EventBridge rule for period reporting
-    const reportingRule = new events.Rule(this, 'ReportingRule', {
-      schedule: events.Schedule.rate(cdk.Duration.days(1)),
-    });
-
-    // Add lambda function as target for Eventbridge rule
-    reportingRule.addTarget(new targets.LambdaFunction(alarmProcessor));
   }
 }
