@@ -37,7 +37,7 @@ export class CloudwatchAlarmSystemStack extends cdk.Stack {
         ec2.InstanceClass.T2,
         ec2.InstanceSize.MICRO
       ),
-      machineImage: ec2.MachineImage.latestAmazonLinux(),
+      machineImage: ec2.MachineImage.latestAmazonLinux2023(),
       securityGroup,
       keyName: 'bastion',
       vpcSubnets: {
